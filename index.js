@@ -11,6 +11,29 @@ dotenv.config();
 app.use(cors());
 app.use(express.json());
 
+// coustom middleware
+function authintication(req, res, next) {
+  const authHeader = req.headers["authorization"];
+  const token = authHeader && authHeader.split(" ")[1];
+  if (token === null) {
+    return res.status(401).json({ message: "token not found" });
+  }
+
+  // verifying the accesss token
+  jwt.verify(token, process.env.ACCESS_TOKEN, (error, user) => {
+    // handling an error if the verification is not successfull
+    if (error)
+      return res.status(403).json({
+        message: "token is invalid",
+        error: error,
+      });
+
+    // setting the token details in the requiest user
+    req.user = user;
+    next();
+  });
+}
+
 // routers
 app.get("/", (req, res) => {
   res.send(`
@@ -40,8 +63,9 @@ app.get("/", (req, res) => {
       `);
 });
 
-app.get("/posts", async (req, res) => {
-  res.send(posts);
+app.get("/posts", authintication, (req, res) => {
+  const user = req.user.name;
+  res.status(200).json(posts.filter((post) => post.username === user));
 });
 
 app.post("/login", (req, res) => {
@@ -51,6 +75,7 @@ app.post("/login", (req, res) => {
   const accessToken = jwt.sign(user, process.env.ACCESS_TOKEN);
   res.json({
     accessToken: accessToken,
+    status: 200,
   });
 });
 

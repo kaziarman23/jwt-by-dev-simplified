@@ -1,0 +1,16 @@
+{
+  "name": "jwt-by-dev-simplified",
+  "version": "1.0.0",
+  "description": "learning about jwt from web dev simplified.",
+  "main": "index.js",
+  "scripts": {
+    "dev": "nodemon index.js"
+  },
+  "author": "kazi arman",
+  "license": "ISC",
+  "dependencies": {
+    "dotenv": "^16.4.7",
+    "express": "^4.21.2",
+    "jsonwebtoken": "^9.0.2"
+  }
+}

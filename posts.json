@@ -1,0 +1,27 @@
+[
+  {
+    "id": 1,
+    "title": "How to Learn JavaScript",
+    "username": "John Doe"
+  },
+  {
+    "id": 2,
+    "title": "Understanding JSON",
+    "username": "Jane Smith"
+  },
+  {
+    "id": 3,
+    "title": "Tips for Effective Remote Work",
+    "username": "Michael Brown"
+  },
+  {
+    "id": 4,
+    "title": "The Future of AI in Education",
+    "username": "Alice Johnson"
+  },
+  {
+    "id": 5,
+    "title": "Top 10 Programming Languages in 2025",
+    "username": "Chris Wilson"
+  }
+]

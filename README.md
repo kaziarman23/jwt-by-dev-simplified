@@ -5,7 +5,7 @@
 Purpose: Prepares the application to handle requests.
 Steps:
 
-1. `dotenv`: Loads environment variables (e.g., `ACCESS_TOKEN`).
+1. `dotenv`: Loads environment variables (`ACCESS_TOKEN`).
 2. `cors`: Enables Cross-Origin Resource Sharing (useful for frontend-backend communication).
 3. `express.json()`: Parses incoming JSON payloads in the request body.
 4. `cookie-parser`: Parses cookies from the `Cookie` header and attaches them to `req.cookies`.

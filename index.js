@@ -5,28 +5,33 @@ const app = express();
 const port = 5000;
 const posts = require("./posts.json");
 const jwt = require("jsonwebtoken");
+const cookieparser = require("cookie-parser");
 
-// middlewares
+// Middleware Setup
 dotenv.config();
 app.use(cors());
 app.use(express.json());
+app.use(cookieparser());
 
-// coustom middleware
+// Custom Authentication Middleware
 function authintication(req, res, next) {
-  const authHeader = req.headers["authorization"];
-  const token = authHeader && authHeader.split(" ")[1];
-  if (token === null) {
+  const token = req.cookies.token;
+  if (!token || token === null) {
     return res.status(401).json({ message: "token not found" });
   }
 
   // verifying the accesss token
   jwt.verify(token, process.env.ACCESS_TOKEN, (error, user) => {
     // handling an error if the verification is not successfull
-    if (error)
+    if (error) {
       return res.status(403).json({
-        message: "token is invalid",
+        message:
+          error.name === "TokenExpiredError"
+            ? "Token expired"
+            : "Token is invalid",
         error: error,
       });
+    }
 
     // setting the token details in the requiest user
     req.user = user;
@@ -63,20 +68,34 @@ app.get("/", (req, res) => {
       `);
 });
 
+// Protected Route
 app.get("/posts", authintication, (req, res) => {
   const user = req.user.name;
+  console.log("user:", user);
   res.status(200).json(posts.filter((post) => post.username === user));
 });
 
+// Login Route
 app.post("/login", (req, res) => {
   const username = req.body.username;
   const user = { name: username };
 
-  const accessToken = jwt.sign(user, process.env.ACCESS_TOKEN);
-  res.json({
-    accessToken: accessToken,
-    status: 200,
+  const accessToken = jwt.sign(user, process.env.ACCESS_TOKEN, {
+    expiresIn: "1h",
   });
+
+  res
+    .status(200)
+    .cookie("token", accessToken, {
+      httpOnly: true,
+      maxAge: 60 * 60 * 1000, // 1 hour
+      sameSite: "strict", // Protect against CSRF attacks
+    })
+    .json({
+      accessToken: accessToken,
+      status: 200,
+      message: "login successfull.",
+    });
 });
 
 app.listen(port, () => {
